@@ -1,0 +1,67 @@
+﻿@inject NavigationManager navigationManager
+@inject IProductService _productService
+    
+<div class="input-group">
+    <input @bind-value="searchText"
+           @bind-value:event="oninput"
+           type="search"
+           list="products"
+           @onkeyup="HandleSearch"
+           class="form-control"
+           placeholder="Search..."
+           @ref="searchInput"/>
+
+    <datalist id="products">
+        @foreach (var suggestion in suggestions)
+        {
+            <option>@suggestion</option>
+        }
+    </datalist>
+    <div class="input-group-append">
+        <button class="btn btn-primary" @onclick="SearchProducts">
+          <span class="oi oi-magnifying-glass"></span>
+        </button>
+    </div>
+</div>
+
+@code {
+
+
+    // html explanaition
+    // bind-value will so that input gets value == searchText
+    // bind-value:event because by default it works on onChange
+
+    // So basically @bind0-value will pass whatever user typed inside actual URl /search/userTyped
+    // onkeyup triggers whenever user types, so that he sees suggestions straight away
+    private string searchText = string.Empty;
+    private List<string> suggestions = new List<string>();
+    // this focuses on the element
+    // needed for input text field, so when page is loaded it will be focused on
+    protected ElementReference searchInput;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await searchInput.FocusAsync();
+        }
+
+    }
+
+    private void SearchProducts()
+    {
+        navigationManager.NavigateTo($"search/{searchText}");
+    }
+
+    public async Task HandleSearch(KeyboardEventArgs args)
+    {
+        if (args.Key == null || args.Key.Equals("Enter"))
+        {
+            SearchProducts();
+        }
+        else if (searchText.Length > 1)
+        {
+            suggestions = await _productService.GetProductSearchSuggestions(searchText);
+        }
+    }
+}
