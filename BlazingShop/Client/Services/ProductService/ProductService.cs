@@ -22,7 +22,7 @@ namespace BlazingShop.Client.Services.ProductService
         public async Task GetProducts(string categoryUrl = null)
         {
             var result = categoryUrl == null
-                ? await _httpClient.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/Product")
+                ? await _httpClient.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/Product/featured")
                 : await _httpClient.GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/Product/Category/{categoryUrl}");
             Products = result?.Data;
             ProductsChanged.Invoke();

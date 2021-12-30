@@ -9,6 +9,7 @@ namespace BlazingShop.Shared.Modals
         public string Title { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
+        public bool Featured { get; set; } = false;
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
         public Category Category { get; set; }

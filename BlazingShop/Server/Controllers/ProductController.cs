@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using BlazingShop.Server.DataBase.Operations.ProductServiceDB;
 using BlazingShop.Shared;
@@ -43,6 +44,12 @@ namespace BlazingShop.Server.Controllers
         public async Task<ActionResult<ServiceResponse<List<Product>>>> SearchProducts(string searchText)
         {
             var result = await _productService.SearchProducts(searchText);
+            return Ok(result);
+        }
+        [HttpGet("featured")]
+        public async Task<ActionResult<ServiceResponse<List<Product>>>> GetFeaturedProducts()
+        {
+            var result = await _productService.GetFeaturedProducts();
             return Ok(result);
         }
 
