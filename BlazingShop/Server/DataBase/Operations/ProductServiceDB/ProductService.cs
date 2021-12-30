@@ -80,11 +80,32 @@ namespace BlazingShop.Server.DataBase.Operations.ProductServiceDB
             return response;
         }
 
-        public async Task<ServiceResponse<List<Product>>> SearchProducts(string searchText)
+        public async Task<ServiceResponse<ProductSearchResultDTO>> SearchProducts(string searchText, int page)
         {
-            var response = new ServiceResponse<List<Product>>
+            // we have 2 products per page
+            var pageResults = 2f;
+            var pageCount = Math.Ceiling((await FindProductsBySearchText(searchText)).Count / pageResults);
+
+            var products = await _dataContext.Products
+                .Where(p => p.Title.ToLower().Contains(searchText.ToLower())
+                            || p.Description.ToLower().Contains(searchText.ToLower()))
+                .Include(p => p.Variants)
+                .ThenInclude(p => p.ProductType)
+                .Skip((page - 1) * (int) pageResults)
+                .Take((int) pageResults)
+                .ToListAsync();
+
+
+            // skip does: lets say user want to see 3rd page. then 3-1 * 2 = 4, meaning we skip first 4 products and start by 5
+            // so 5 and 6 th products will be shown on 3rd page. Since we show 2 products per page
+            var response = new ServiceResponse<ProductSearchResultDTO>
             {
-                Data = await FindProductsBySearchText(searchText)
+                Data = new ProductSearchResultDTO
+                {
+                    Products = products,
+                    CurrentPage = page,
+                    Pages = (int)pageCount
+                }
             };
 
             return response;
