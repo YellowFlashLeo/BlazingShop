@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using BlazingShop.Server.DataBase;
 using BlazingShop.Server.DataBase.Operations.CategoryServiceDB;
 using BlazingShop.Server.DataBase.Operations.ProductServiceDB;
+using Blazored.Toast;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazingShop.Server

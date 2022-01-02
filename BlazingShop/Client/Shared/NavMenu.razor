@@ -17,8 +17,33 @@
         <li class="dropdown-divider"></li>
         @foreach (var category in _categoryService.Categories)
         {
+            @*@if (category.Url.Equals("books"))
+            {
+                <li class="nav-item px-3 oi oi-book">
+                    <NavLink class="nav-link" href="@category.Url">
+                        @category.Name
+                    </NavLink>
+                </li>
+            }
+            @if (category.Url.Equals("movies"))
+            {
+                <li class="nav-item px-3 oi oi-eye">
+                    <NavLink class="nav-link" href="@category.Url">
+                        @category.Name
+                    </NavLink>
+                </li>
+            }
+            @if (category.Url.Equals("video-games"))
+            {
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="@category.Url">
+                        @category.Name
+                    </NavLink>
+                </li>
+            }*@
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="@category.Url">
+                    
                     @category.Name
                 </NavLink>
             </li>
