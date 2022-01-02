@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using BlazingShop.Client.Services.ProductService;
 using BlazingShop.Shared;
+using BlazingShop.Shared.DTOs;
 using BlazingShop.Shared.Modals;
 using Blazored.LocalStorage;
 using Blazored.Toast.Services;

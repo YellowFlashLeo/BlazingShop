@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using BlazingShop.Shared;
+using BlazingShop.Shared.DTOs;
 using BlazingShop.Shared.Modals;
 
 namespace BlazingShop.Client.Services.ProductService

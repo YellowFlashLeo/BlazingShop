@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BlazingShop.Shared;
+using BlazingShop.Shared.DTOs;
 using BlazingShop.Shared.Modals;
 
 namespace BlazingShop.Client.Services.CartService

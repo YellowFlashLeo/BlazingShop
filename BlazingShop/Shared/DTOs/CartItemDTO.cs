@@ -1,4 +1,4 @@
-﻿namespace BlazingShop.Shared
+﻿namespace BlazingShop.Shared.DTOs
 {
    public class CartItemDTO
     {

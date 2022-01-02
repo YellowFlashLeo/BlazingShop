@@ -2,6 +2,17 @@
 @page "/search/{searchText}/{page:int}"
 @page "/{categoryUrl}"
 @inject IProductService _productService
+@inject ISyncLocalStorageService _localStorageService
+
+
+<AuthorizeView>
+    <NotAuthorized>
+        <h1>Welcome to Blazing Shop</h1>
+    </NotAuthorized>
+    <Authorized>
+        <h1>Welcome back, @_localStorageService.GetItemAsString("username")!</h1>
+    </Authorized>
+</AuthorizeView>
 
 @if (SearchText == null && CategoryUrl == null)
 {

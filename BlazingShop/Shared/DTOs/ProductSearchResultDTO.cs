@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using BlazingShop.Shared.Modals;
 
-namespace BlazingShop.Shared
+namespace BlazingShop.Shared.DTOs
 {
     public class ProductSearchResultDTO
     {

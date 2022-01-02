@@ -34,19 +34,22 @@ namespace BlazingShop.Server.DataBase
                 {
                     Id = 1,
                     Name = "Books",
-                    Url = "books"
+                    Url = "books",
+                    Icon = "book"
                 },
                 new Category
                 {
                     Id = 2,
                     Name = "Movies",
-                    Url = "movies"
+                    Url = "movies",
+                    Icon = "camera-slr"
                 },
                 new Category
                 {
                     Id = 3,
                     Name = "Video Games",
-                    Url = "video-games"
+                    Url = "video-games",
+                    Icon = "aperture"
                 });
 
             modelBuilder.Entity<Product>().HasData(

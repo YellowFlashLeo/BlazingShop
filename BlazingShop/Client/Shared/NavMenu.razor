@@ -1,4 +1,6 @@
 ﻿@inject ICategoryService _categoryService;
+@inject ILocalStorageService _localStorage
+@inject AuthenticationStateProvider _authenticationStateProvider
 
 <div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">BlazingShop</a>
@@ -11,43 +13,36 @@
     <ul class="nav flex-column">
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                Home
+                <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </li>
         <li class="dropdown-divider"></li>
         @foreach (var category in _categoryService.Categories)
         {
-            @*@if (category.Url.Equals("books"))
-            {
-                <li class="nav-item px-3 oi oi-book">
-                    <NavLink class="nav-link" href="@category.Url">
-                        @category.Name
-                    </NavLink>
-                </li>
-            }
-            @if (category.Url.Equals("movies"))
-            {
-                <li class="nav-item px-3 oi oi-eye">
-                    <NavLink class="nav-link" href="@category.Url">
-                        @category.Name
-                    </NavLink>
-                </li>
-            }
-            @if (category.Url.Equals("video-games"))
-            {
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="@category.Url">
-                        @category.Name
-                    </NavLink>
-                </li>
-            }*@
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href="@category.Url">
-                    
+                    <span class="oi oi-@category.Icon" aria-hidden="true"></span>
                     @category.Name
                 </NavLink>
             </li>
         }
+        <li class="dropdown-divider"></li>
+        <li class="nav-item px-3">
+            <AuthorizeView>
+                <NotAuthorized>
+                    <NavLink class="nav-link" href="login">
+                        <span class="oi oi-account-login" aria-hidden="true"></span>
+                        Login
+                    </NavLink>
+                </NotAuthorized>
+                <Authorized>
+                    <a class="nav-link" @onclick="Logout" style="cursor: pointer">
+                        <span class="oi oi-account-logout" aria-hidden="true"></span>
+                        Logout
+                    </a>
+                </Authorized>
+            </AuthorizeView>
+        </li>
     </ul>
 </div>
 
@@ -66,4 +61,9 @@
        await _categoryService.GetCategories();
     }
 
+    private async void Logout()
+    {
+        await _localStorage.RemoveItemAsync("username");
+        await _authenticationStateProvider.GetAuthenticationStateAsync();
+    }
 }
