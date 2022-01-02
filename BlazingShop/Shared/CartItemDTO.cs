@@ -1,6 +1,6 @@
 ﻿namespace BlazingShop.Shared
 {
-   public class CartItem
+   public class CartItemDTO
     {
         public int ProductId { get; set; }
         public int EditionId { get; set; }

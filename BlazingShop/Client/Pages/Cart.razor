@@ -1,10 +1,46 @@
 ﻿@page "/cart"
+@using BlazingShop.Shared
 @inject ICartService _cartService
 
 <h3>Shopping Cart</h3>
 
-
+@if (cartItems == null || cartItems.Count <= 0)
+{
+   <span>Shopping cart is empty</span>
+}
+else
+{
+    <div>
+        @foreach (var cartItem in cartItems)
+        {
+            <div class="item-container">
+                <div class="item-image-wrapper"><img src="@cartItem.Image" class="item-image"/></div>
+                <div class="item-name">
+                    <h5><a href="/product/@cartItem.ProductId">@cartItem.Title</a></h5>
+                    <span>@cartItem.EditionName</span>
+                    <button class="btn btn-danger" @onclick="@(()=> DeleteItem(cartItem))">Delete</button>
+                </div>
+                <div class="item-price">$@cartItem.Price</div>
+            </div>
+        }
+        <div class="item-price">
+            Total (@cartItems.Count): $@cartItems.Sum(item => item.Price)
+        </div>
+    </div>
+}
 
 @code {
-    List
+    List<CartItemDTO> cartItems = new List<CartItemDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        cartItems = await _cartService.GetCartItems();
+    }
+
+    private async Task DeleteItem(CartItemDTO cartItem)
+    {
+        await _cartService.DeleteItem(cartItem);
+        cartItems = await _cartService.GetCartItems();
+    }
+
 }
