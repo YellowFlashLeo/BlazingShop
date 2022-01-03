@@ -1,4 +1,5 @@
-﻿using BlazingShop.Shared.Modals;
+﻿using BlazingShop.Shared;
+using BlazingShop.Shared.Modals;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazingShop.Server.DataBase
@@ -284,5 +285,6 @@ namespace BlazingShop.Server.DataBase
         public DbSet<Category> Categories { get; set; }
         public DbSet<ProductType> ProductTypes { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
+        public DbSet<Stats> Stats { get; set; }
     }
 }

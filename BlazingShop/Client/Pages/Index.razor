@@ -1,8 +1,10 @@
 ﻿@page "/"
 @page "/search/{searchText}/{page:int}"
 @page "/{categoryUrl}"
+
 @inject IProductService _productService
 @inject ISyncLocalStorageService _localStorageService
+@inject IStatsService _statsService
 
 
 <AuthorizeView>
@@ -49,5 +51,7 @@ else
             await _productService.GetProducts();
         }
 
+        await _statsService.IncrementVisits();
+        await _statsService.GetVisits();
     }
 }

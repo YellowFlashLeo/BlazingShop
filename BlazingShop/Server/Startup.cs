@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using BlazingShop.Server.DataBase;
 using BlazingShop.Server.DataBase.Operations.CategoryServiceDB;
 using BlazingShop.Server.DataBase.Operations.ProductServiceDB;
+using BlazingShop.Server.DataBase.Operations.StatsServiceDB;
 using Blazored.Toast;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +30,7 @@ namespace BlazingShop.Server
 
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IStatsService, StatsService>();
             services.AddControllersWithViews();
             services.AddRazorPages();
         }
