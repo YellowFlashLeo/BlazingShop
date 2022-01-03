@@ -61,6 +61,8 @@ namespace BlazingShop.Server.DataBase.Operations.ProductServiceDB
             }
             else
             {
+                productFromDb.Views++;
+                await _dataContext.SaveChangesAsync();
                 response.Data = productFromDb;
             }
 

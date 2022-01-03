@@ -1,4 +1,10 @@
-﻿.media-img {
+﻿.views {
+    font-size: 12px;
+    color: gray;
+    text-align: right;
+}
+
+.media-img {
     max-height: 500px;
     max-width: 500px;
     border-radius: 6px;

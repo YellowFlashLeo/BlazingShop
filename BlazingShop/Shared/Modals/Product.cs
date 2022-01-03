@@ -14,5 +14,6 @@ namespace BlazingShop.Shared.Modals
         public int CategoryId { get; set; }
         public Category Category { get; set; }
         public List<ProductVariant> Variants { get; set; } = new List<ProductVariant>();
+        public int Views { get; set; } = 0;
     }
 }
