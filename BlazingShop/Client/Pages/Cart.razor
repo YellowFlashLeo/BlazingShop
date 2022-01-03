@@ -1,37 +1,71 @@
 ﻿@page "/cart"
-@using BlazingShop.Shared
 @using BlazingShop.Shared.DTOs
 @inject ICartService _cartService
 
-<h3>Shopping Cart</h3>
-
-@if (cartItems == null || cartItems.Count <= 0)
+@if (!isOrderPlaced)
 {
-   <span>Shopping cart is empty</span>
+    <h3>Shopping Cart</h3>
+
+    @if (cartItems == null || cartItems.Count <= 0)
+    {
+        <span>Shopping cart is empty</span>
+    }
+    else
+    {
+        <div>
+            @foreach (var cartItem in cartItems)
+            {
+                <div class="item-container">
+                    <div class="item-image-wrapper"><img src="@cartItem.Image" class="item-image" /></div>
+                    <div class="item-name">
+                        <h5><a href="/product/@cartItem.ProductId">@cartItem.Title</a></h5>
+                        <span>@cartItem.EditionName</span>
+                        <button class="btn btn-danger" @onclick="@(()=> DeleteItem(cartItem))">Delete</button>
+                        <EditForm Model="cartItem">
+                            <InputNumber id="quantity" @bind-Value="cartItem.Quantity"
+                                         class="form-control" style="width: 70px" />
+                        </EditForm>
+                    </div>
+                    <div class="item-price">$@(cartItem.Price * @cartItem.Quantity)</div>
+                </div>
+            }
+            <div class="item-price">
+                Total (@cartItems.Count): $@cartItems.Sum(item => item.Price * item.Quantity)
+            </div>
+            <div style="text-align: center; margin-top: 10px;">
+                <button class="btn btn-primary btn-lg" @onclick="PlaceOrder">Place Order</button>
+            </div>
+        </div>
+    }
 }
 else
 {
+    <h3>Thank you for your order!</h3>
+    <h4>Purchased items:</h4>
+
     <div>
         @foreach (var cartItem in cartItems)
         {
             <div class="item-container">
-                <div class="item-image-wrapper"><img src="@cartItem.Image" class="item-image"/></div>
+                <div class="item-image-wrapper"><img src="@cartItem.Image" class="item-image" /></div>
                 <div class="item-name">
                     <h5><a href="/product/@cartItem.ProductId">@cartItem.Title</a></h5>
                     <span>@cartItem.EditionName</span>
-                    <button class="btn btn-danger" @onclick="@(()=> DeleteItem(cartItem))">Delete</button>
                 </div>
-                <div class="item-price">$@cartItem.Price</div>
+                <div class="item-price">$@(cartItem.Price * @cartItem.Quantity)</div>
             </div>
         }
         <div class="item-price">
-            Total (@cartItems.Count): $@cartItems.Sum(item => item.Price)
+            Total (@cartItems.Count): $@cartItems.Sum(item => item.Price * item.Quantity)
         </div>
     </div>
 }
 
+
+
 @code {
     List<CartItemDTO> cartItems = new List<CartItemDTO>();
+    bool isOrderPlaced = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -44,4 +78,9 @@ else
         cartItems = await _cartService.GetCartItems();
     }
 
+    private async Task PlaceOrder()
+    {
+        isOrderPlaced = true;
+        await _cartService.EmptyCart();
+    }
 }

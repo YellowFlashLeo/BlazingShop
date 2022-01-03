@@ -1,4 +1,5 @@
 ﻿@page "/product/{id:int}"
+@using BlazingShop.Shared.DTOs
 @inject IProductService _productService
 @inject ILocalStorageService _localStorage
 @inject IToastService _toastService
@@ -44,6 +45,11 @@ else
                     $@GetSelectedVariant().Price
                 </h4>
             }
+            <EditForm Model="cartItem">
+                <div class="form-group">
+                    <InputNumber id="quantity" @bind-Value="cartItem.Quantity" class="form-control" style="width: 70px;"/>
+                </div>
+            </EditForm>
             <button class="btn btn-primary" @onclick="AddToCart"><i class="oi oi-cart">&nbsp;&nbsp;&nbsp;Add to Cart</i></button>
         </div>
     </div>
@@ -64,6 +70,11 @@ else
     private Product product = null;
     private string message;
     private int currentTypeId = 1;
+
+    private CartItemDTO cartItem = new CartItemDTO
+    {
+        Quantity = 1
+    };
 
     protected override async Task OnParametersSetAsync()
     {
@@ -94,7 +105,16 @@ else
 
     private async Task AddToCart()
     {
-        await _cartService.AddToCart(GetSelectedVariant());
+        var productVariant = GetSelectedVariant();
+
+        cartItem.EditionId = productVariant.ProductTypeId;
+        cartItem.EditionName = productVariant.ProductType.Name;
+        cartItem.Image = product.ImageUrl;
+        cartItem.Price = productVariant.Price;
+        cartItem.ProductId = productVariant.ProductId;
+        cartItem.Title = product.Title;
+
+        await _cartService.AddToCart(cartItem);
     }
 
 }
