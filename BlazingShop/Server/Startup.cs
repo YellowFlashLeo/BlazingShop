@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using BlazingShop.Server.DataBase;
 using BlazingShop.Server.DataBase.Operations.CategoryServiceDB;
+using BlazingShop.Server.DataBase.Operations.PaymentService;
 using BlazingShop.Server.DataBase.Operations.ProductServiceDB;
 using BlazingShop.Server.DataBase.Operations.StatsServiceDB;
 using Blazored.Toast;
@@ -31,6 +32,7 @@ namespace BlazingShop.Server
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IStatsService, StatsService>();
+            services.AddScoped<IPaymentService, PaymentService>();
             services.AddControllersWithViews();
             services.AddRazorPages();
         }

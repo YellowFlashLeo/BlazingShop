@@ -12,5 +12,6 @@ namespace BlazingShop.Client.Services.CartService
       Task<List<CartItemDTO>> GetCartItems();
       Task DeleteItem(CartItemDTO cartItem);
       Task EmptyCart();
+      Task<string> Checkout();
   }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using BlazingShop.Client.Services.ProductService;
 using BlazingShop.Shared.DTOs;
@@ -13,17 +15,20 @@ namespace BlazingShop.Client.Services.CartService
         private readonly ILocalStorageService _localStorage;
         private readonly IToastService _toastService;
         private readonly IProductService _productService;
+        private readonly HttpClient _httpClient;
 
         public event Action OnChange;
 
         public CartService(
             ILocalStorageService localStorage,
             IToastService toastService,
-            IProductService productService)
+            IProductService productService,
+            HttpClient httpClient)
         {
             _localStorage = localStorage;
             _toastService = toastService;
             _productService = productService;
+            _httpClient = httpClient;
         }
         
         public  async Task AddToCart(CartItemDTO cartItem)
@@ -75,6 +80,13 @@ namespace BlazingShop.Client.Services.CartService
         {
             await _localStorage.RemoveItemAsync("cart");
             OnChange.Invoke();
+        }
+
+        public async Task<string> Checkout()
+        {
+            var result = await _httpClient.PostAsJsonAsync("api/payment/checkout", await GetCartItems());
+            var url = await result.Content.ReadAsStringAsync();
+            return url;
         }
     }
 }

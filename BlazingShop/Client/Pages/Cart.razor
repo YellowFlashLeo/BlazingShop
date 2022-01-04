@@ -1,6 +1,7 @@
 ﻿@page "/cart"
 @using BlazingShop.Shared.DTOs
 @inject ICartService _cartService
+@inject NavigationManager _navigationManager
 
 @if (!isOrderPlaced)
 {
@@ -80,7 +81,9 @@ else
 
     private async Task PlaceOrder()
     {
-        isOrderPlaced = true;
+        //isOrderPlaced = true;
+        string checkoutUrl = await _cartService.Checkout();
+        _navigationManager.NavigateTo(checkoutUrl);
         await _cartService.EmptyCart();
     }
 }
