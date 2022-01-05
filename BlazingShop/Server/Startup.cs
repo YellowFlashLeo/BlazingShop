@@ -8,7 +8,8 @@ using BlazingShop.Server.DataBase.Operations.CategoryServiceDB;
 using BlazingShop.Server.DataBase.Operations.PaymentService;
 using BlazingShop.Server.DataBase.Operations.ProductServiceDB;
 using BlazingShop.Server.DataBase.Operations.StatsServiceDB;
-using Blazored.Toast;
+using BlazingShop.Shared.Modals;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazingShop.Server
@@ -29,12 +30,22 @@ namespace BlazingShop.Server
             services.AddDbContext<DataContext>(options =>
                 options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=blazerShop-db;Trusted_Connection=True;"));
 
+            services.AddIdentityCore<User>(opt =>
+            {
+                opt.Password.RequireNonAlphanumeric = false;
+            })
+                .AddEntityFrameworkStores<DataContext>()
+                .AddSignInManager<SignInManager<User>>();
+
+            services.AddAuthentication();
+
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IStatsService, StatsService>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddControllersWithViews();
             services.AddRazorPages();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,6 +69,8 @@ namespace BlazingShop.Server
 
             app.UseRouting();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
