@@ -1,6 +1,7 @@
 ﻿@inject ICategoryService _categoryService;
 @inject ILocalStorageService _localStorage
 @inject AuthenticationStateProvider _authenticationStateProvider
+@inject IAuthenticationService _authenticationService
 
 <div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">BlazingShop</a>
@@ -36,7 +37,7 @@
                     </NavLink>
                 </NotAuthorized>
                 <Authorized>
-                    <a class="nav-link" @onclick="Logout" style="cursor: pointer">
+                    <a class="nav-link" href="logout" style="cursor: pointer">
                         <span class="oi oi-account-logout" aria-hidden="true"></span>
                         Logout
                     </a>
@@ -63,7 +64,8 @@
 
     private async void Logout()
     {
-        await _localStorage.RemoveItemAsync("username");
-        await _authenticationStateProvider.GetAuthenticationStateAsync();
+        await _authenticationService.Logout();
+       // await _localStorage.RemoveItemAsync("username");
+       // await _authenticationStateProvider.GetAuthenticationStateAsync();
     }
 }

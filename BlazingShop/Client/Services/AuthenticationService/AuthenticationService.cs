@@ -58,8 +58,7 @@ namespace BlazingShop.Client.Services.AuthenticationService
             await _localStorage.RemoveItemAsync("auth_token");
 
             ((AuthStateProvider)_authStateProvider).NotifyUserLogout();
+            _httpClient.DefaultRequestHeaders.Authorization = null;
         }
-
-
     }
 }
