@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using BlazingShop.Client.Authentication;
+using BlazingShop.Client.Services.AuthenticationService;
 using BlazingShop.Client.Services.CartService;
 using BlazingShop.Client.Services.CategoryService;
 using BlazingShop.Client.Services.ProductService;
@@ -25,6 +27,8 @@ namespace BlazingShop.Client
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IStatsService,StatsService>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddScoped<AuthenticationStateProvider,AuthStateProvider>();
 
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddBlazoredToast();
