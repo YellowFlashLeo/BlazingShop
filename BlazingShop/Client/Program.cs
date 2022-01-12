@@ -29,7 +29,8 @@ namespace BlazingShop.Client
             builder.Services.AddScoped<IStatsService,StatsService>();
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddScoped<AuthenticationStateProvider,AuthStateProvider>();
-
+            
+            
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddBlazoredToast();
             builder.Services.AddOptions();

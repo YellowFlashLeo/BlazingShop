@@ -26,7 +26,7 @@ namespace BlazingShop.Server.Controllers
         }
 
         // will create ctor with props which are readonly once ctr is done (init)
-        public record UserRegistrationModel(string FirstName, string LastName, string Email, string Password);
+        public record UserRegistrationModel(string FirstName, string LastName, string EmailAddress, string Password);
 
         [HttpPost]
         [Route("/Register")]
@@ -35,17 +35,17 @@ namespace BlazingShop.Server.Controllers
         {
             if (ModelState.IsValid)
             {
-                var existingUser = await _userManager.FindByEmailAsync(userToBeRegistered.Email);
+                var existingUser = await _userManager.FindByEmailAsync(userToBeRegistered.EmailAddress);
                 if (existingUser is null)
                 {
                     User newUser = new()
                     {
                         FirstName = userToBeRegistered.FirstName,
                         LastName = userToBeRegistered.LastName,
-                        Email = userToBeRegistered.Email,
+                        Email = userToBeRegistered.EmailAddress,
                         EmailConfirmed = true,
                         Password = userToBeRegistered.Password,
-                        UserName = userToBeRegistered.Email
+                        UserName = userToBeRegistered.EmailAddress
                     };
 
                     IdentityResult result = await _userManager.CreateAsync(newUser, userToBeRegistered.Password);

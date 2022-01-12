@@ -10,7 +10,6 @@ using BlazingShop.Server.DataBase;
 using BlazingShop.Shared.Modals;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace BlazingShop.Server.Controllers

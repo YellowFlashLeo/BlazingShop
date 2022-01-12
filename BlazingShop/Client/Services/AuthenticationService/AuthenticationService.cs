@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using BlazingShop.Client.Authentication;
 using BlazingShop.Client.Authentication.Models;
+using BlazingShop.Shared.Modals;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Newtonsoft.Json;
@@ -26,15 +28,21 @@ namespace BlazingShop.Client.Services.AuthenticationService
             _httpClient = httpClient;
         }
 
+        public async Task RegisterUser(CreateUserModel model)
+        {
+            var data = new {model.FirstName, model.LastName, model.EmailAddress, model.Password};
+
+            using (HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/Register", data))
+            {
+                if (response.IsSuccessStatusCode == false)
+                {
+                    throw new Exception(response.ReasonPhrase);
+                }
+            }
+        }
+
         public async Task<AuthenticatedUserModel> Login(AuthenticationUserModel userToBeAuthenticated)
         {
-            //var data = new FormUrlEncodedContent(new[]
-            //{
-            //    new KeyValuePair<string, string>("grant_type", "password"),
-            //    new KeyValuePair<string, string>("username",userToBeAuthenticated.Email),
-            //    new KeyValuePair<string, string>("password",userToBeAuthenticated.Password)
-            //});
-
             string inputJson = JsonConvert.SerializeObject(userToBeAuthenticated);
             HttpContent inputContent = new StringContent(inputJson, Encoding.UTF8, "application/json");
 
@@ -46,7 +54,6 @@ namespace BlazingShop.Client.Services.AuthenticationService
                 }
                 else
                 {
-                    //var result = await authResult.Content.ReadFromJsonAsync<AuthenticatedUserModel>();
                     var result = JsonSerializer.Deserialize<AuthenticatedUserModel>(
                         await authResult.Content.ReadAsStringAsync(),
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
