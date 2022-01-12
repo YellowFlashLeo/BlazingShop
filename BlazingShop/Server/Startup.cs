@@ -1,3 +1,5 @@
+using System;
+using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +11,7 @@ using BlazingShop.Server.DataBase.Operations.PaymentService;
 using BlazingShop.Server.DataBase.Operations.ProductServiceDB;
 using BlazingShop.Server.DataBase.Operations.StatsServiceDB;
 using BlazingShop.Shared.Modals;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -33,14 +36,14 @@ namespace BlazingShop.Server
                 options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=blazerShop-db;Trusted_Connection=True;"));
 
             services.AddIdentityCore<User>(opt =>
-            {
-                opt.Password.RequireNonAlphanumeric = false;
-            })
-                .AddEntityFrameworkStores<DataContext>()
-                .AddSignInManager<SignInManager<User>>();
+                {
+                    opt.Password.RequireNonAlphanumeric = false;
+                })
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<DataContext>();
+                //.AddSignInManager<SignInManager<User>>();
 
-            services.AddAuthentication();
-
+           
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IStatsService, StatsService>();
@@ -48,6 +51,24 @@ namespace BlazingShop.Server
             services.AddControllersWithViews();
             services.AddRazorPages();
 
+            // here we get token and check to make sure it is valid
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = "JwtBearer";
+                    options.DefaultChallengeScheme = "JwtBearer";
+                })
+                .AddJwtBearer("JwtBearer", JwtBearerOptions =>
+                {
+                    JwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("MySecretKeyIsSecret")),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.FromMinutes(5)
+                    };
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

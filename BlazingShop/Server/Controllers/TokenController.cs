@@ -5,10 +5,12 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using BlazingShop.Client.Authentication.Models;
 using BlazingShop.Server.DataBase;
 using BlazingShop.Shared.Modals;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace BlazingShop.Server.Controllers
@@ -17,6 +19,11 @@ namespace BlazingShop.Server.Controllers
     [ApiController]
     public class TokenController : ControllerBase
     {
+        public class MyModel
+        {
+            public string Access_Token { get; set; }
+            public string UserName { get; set; }
+        }
         private readonly DataContext _context;
         private readonly UserManager<User> _userManager;
 
@@ -25,14 +32,15 @@ namespace BlazingShop.Server.Controllers
             _context = context;
             _userManager = userManager;
         }
-
+        //[FromBody]
+        //AuthenticationUserModel model
         [Route("/token")]
         [HttpPost]
-        public async Task<ActionResult> Create(string username, string password, string grant_type)
+        public async Task<ActionResult> Create([FromBody] AuthenticationUserModel model)
         {
-            if (await IsValidUsernameAndPassword(username, password))
+            if (await IsValidUsernameAndPassword(model.Email, model.Password))
             {
-                return new ObjectResult(await GenerateToken(username));
+                return Ok(await GenerateToken(model.Email));
             }
             else
             {
@@ -42,17 +50,17 @@ namespace BlazingShop.Server.Controllers
 
         private async Task<bool> IsValidUsernameAndPassword(string username, string password)
         {
-            var user = await _userManager.FindByEmailAsync(username);
-            return await _userManager.CheckPasswordAsync(user, password);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.EmailAddress == username);
+            return user.Password == password ? true : false;
         }
 
         private async Task<dynamic> GenerateToken(string username)
         {
-            var user = await _userManager.FindByEmailAsync(username);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.EmailAddress == username);
             var roles = from ur in _context.UserRoles
-                join r in _context.Roles on ur.RoleId equals r.Id
-                where ur.UserId == user.Id
-                select new {ur.UserId, ur.RoleId, r.Name};
+                        join r in _context.Roles on ur.RoleId equals r.Id
+                        where ur.UserId == user.Id
+                        select new { ur.UserId, ur.RoleId, r.Name };
 
             var claims = new List<Claim>
             {
@@ -80,6 +88,12 @@ namespace BlazingShop.Server.Controllers
                         SecurityAlgorithms.HmacSha256)),
                 new JwtPayload(claims));
 
+            //var output = new MyModel()
+            //{
+
+            //    Access_Token = new JwtSecurityTokenHandler().WriteToken(token),
+            //    UserName = username
+            //};
             var output = new
             {
                 Access_Token = new JwtSecurityTokenHandler().WriteToken(token),

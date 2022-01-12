@@ -1,12 +1,17 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using BlazingShop.Client.Authentication;
 using BlazingShop.Client.Authentication.Models;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace BlazingShop.Client.Services.AuthenticationService
 {
@@ -25,32 +30,38 @@ namespace BlazingShop.Client.Services.AuthenticationService
 
         public async Task<AuthenticatedUserModel> Login(AuthenticationUserModel userToBeAuthenticated)
         {
-            var data = new FormUrlEncodedContent(new[]
-            {
-                new KeyValuePair<string, string>("grant_type", "password"),
-                new KeyValuePair<string, string>("username",userToBeAuthenticated.Email),
-                new KeyValuePair<string, string>("password",userToBeAuthenticated.Password)
-            });
+            //var data = new FormUrlEncodedContent(new[]
+            //{
+            //    new KeyValuePair<string, string>("grant_type", "password"),
+            //    new KeyValuePair<string, string>("username",userToBeAuthenticated.Email),
+            //    new KeyValuePair<string, string>("password",userToBeAuthenticated.Password)
+            //});
 
-            var authResult = await _httpClient.PostAsync("https://localhost:5001/token",data);
-            var authContent = await authResult.Content.ReadAsStringAsync();
+            string inputJson = JsonConvert.SerializeObject(userToBeAuthenticated);
+            HttpContent inputContent = new StringContent(inputJson, Encoding.UTF8, "application/json");
 
-            if (authResult.IsSuccessStatusCode == false)
+            using (var authResult = await _httpClient.PostAsync($"/token", inputContent))
             {
-                return null;
+                if (authResult.IsSuccessStatusCode == false)
+                {
+                    throw new Exception(authResult.ReasonPhrase);
+                }
+                else
+                {
+                    //var result = await authResult.Content.ReadFromJsonAsync<AuthenticatedUserModel>();
+                    var result = JsonSerializer.Deserialize<AuthenticatedUserModel>(
+                        await authResult.Content.ReadAsStringAsync(),
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                    await _localStorage.SetItemAsync("auth_token", result.Access_Token);
+
+                    ((AuthStateProvider)_authStateProvider).NotifyUserAuthentication(result.Access_Token);
+
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", result.Access_Token);
+
+                    return result;
+                }
             }
-
-            var result = JsonSerializer.Deserialize<AuthenticatedUserModel>(
-                authContent,
-                new JsonSerializerOptions{PropertyNameCaseInsensitive = true});
-
-            await _localStorage.SetItemAsync("auth_token", result.Access_Token);
-
-            ((AuthStateProvider)_authStateProvider).NotifyUserAuthentication(result.Access_Token);
-
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", result.Access_Token);
-
-            return result;
         }
 
         public async Task Logout()
