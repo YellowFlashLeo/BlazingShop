@@ -19,11 +19,6 @@ namespace BlazingShop.Server.Controllers
     [ApiController]
     public class TokenController : ControllerBase
     {
-        public class MyModel
-        {
-            public string Access_Token { get; set; }
-            public string UserName { get; set; }
-        }
         private readonly DataContext _context;
         private readonly UserManager<User> _userManager;
 
@@ -32,8 +27,7 @@ namespace BlazingShop.Server.Controllers
             _context = context;
             _userManager = userManager;
         }
-        //[FromBody]
-        //AuthenticationUserModel model
+
         [Route("/token")]
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] AuthenticationUserModel model)
@@ -50,13 +44,13 @@ namespace BlazingShop.Server.Controllers
 
         private async Task<bool> IsValidUsernameAndPassword(string username, string password)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.EmailAddress == username);
+            var user = await _userManager.FindByEmailAsync(username);
             return user.Password == password ? true : false;
         }
 
         private async Task<dynamic> GenerateToken(string username)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.EmailAddress == username);
+            var user = await _userManager.FindByEmailAsync(username);
             var roles = from ur in _context.UserRoles
                         join r in _context.Roles on ur.RoleId equals r.Id
                         where ur.UserId == user.Id
@@ -88,12 +82,6 @@ namespace BlazingShop.Server.Controllers
                         SecurityAlgorithms.HmacSha256)),
                 new JwtPayload(claims));
 
-            //var output = new MyModel()
-            //{
-
-            //    Access_Token = new JwtSecurityTokenHandler().WriteToken(token),
-            //    UserName = username
-            //};
             var output = new
             {
                 Access_Token = new JwtSecurityTokenHandler().WriteToken(token),

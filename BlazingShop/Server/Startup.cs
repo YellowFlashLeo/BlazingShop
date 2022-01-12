@@ -10,6 +10,7 @@ using BlazingShop.Server.DataBase.Operations.CategoryServiceDB;
 using BlazingShop.Server.DataBase.Operations.PaymentService;
 using BlazingShop.Server.DataBase.Operations.ProductServiceDB;
 using BlazingShop.Server.DataBase.Operations.StatsServiceDB;
+using BlazingShop.Server.Extensions;
 using BlazingShop.Shared.Modals;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -32,22 +33,14 @@ namespace BlazingShop.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DataContext>(options =>
-                options.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=blazerShop-db;Trusted_Connection=True;"));
-
+            services.AddApplicationServices(Configuration);
             services.AddIdentityCore<User>(opt =>
                 {
                     opt.Password.RequireNonAlphanumeric = false;
                 })
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<DataContext>();
-                //.AddSignInManager<SignInManager<User>>();
 
-           
-            services.AddScoped<IProductService, ProductService>();
-            services.AddScoped<ICategoryService, CategoryService>();
-            services.AddScoped<IStatsService, StatsService>();
-            services.AddScoped<IPaymentService, PaymentService>();
             services.AddControllersWithViews();
             services.AddRazorPages();
 
@@ -76,8 +69,12 @@ namespace BlazingShop.Server
         {
             if (env.IsDevelopment())
             {
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
+
                 app.UseDeveloperExceptionPage();
                 app.UseWebAssemblyDebugging();
+
             }
             else
             {

@@ -2,6 +2,7 @@
 
 namespace BlazingShop.Shared.Modals
 {
+    // This is for AspNetUser
     public class User : IdentityUser
     {
         public string FirstName { get; set; }

@@ -8,6 +8,7 @@ using BlazingShop.Shared.DTOs;
 using BlazingShop.Shared.Modals;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazingShop.Server.Controllers
 {
@@ -24,6 +25,50 @@ namespace BlazingShop.Server.Controllers
             _userManager = userManager;
         }
 
+        // will create ctor with props which are readonly once ctr is done (init)
+        public record UserRegistrationModel(string FirstName, string LastName, string Email, string Password);
+
+        [HttpPost]
+        [Route("/Register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register(UserRegistrationModel userToBeRegistered)
+        {
+            if (ModelState.IsValid)
+            {
+                var existingUser = await _userManager.FindByEmailAsync(userToBeRegistered.Email);
+                if (existingUser is null)
+                {
+                    User newUser = new()
+                    {
+                        FirstName = userToBeRegistered.FirstName,
+                        LastName = userToBeRegistered.LastName,
+                        Email = userToBeRegistered.Email,
+                        EmailConfirmed = true,
+                        Password = userToBeRegistered.Password,
+                        UserName = userToBeRegistered.Email
+                    };
+
+                    IdentityResult result = await _userManager.CreateAsync(newUser, userToBeRegistered.Password);
+
+                    if (result.Succeeded)
+                    {
+                        // since we already registered this user, its id was generated auto
+                        //existingUser = await _userManager.FindByEmailAsync(userToBeRegistered.Email);
+                        // This will be used whn i create separate table for user apart from ASPnetUsers
+                        //UserModel u = new()
+                        //{
+                        //    Id = existingUser.Id,
+                        //    Firstname = userToBeRegistered.FirstName,
+                        //    Lastname = userToBeRegistered.LastName,
+                        //    EmailAddress = userToBeRegistered.Email
+                        //};
+                        return Ok();
+                    }
+                }
+            }
+
+            return BadRequest();
+        }
         [HttpGet]
         public User GetById()
         {
