@@ -15,6 +15,14 @@
         <h1>Welcome back, @context.User.FindFirst(ClaimTypes.Name).Value!</h1>
     </Authorized>
 </AuthorizeView>*@
+<AuthorizeView>
+    <NotAuthorized>
+        <h1>Welcome to Blazing Shop</h1>
+    </NotAuthorized>
+    <Authorized>
+        <h1>Welcome back, @context.User.FindFirst(ClaimTypes.Name).Value!</h1>
+    </Authorized>
+</AuthorizeView>
 
 @if (SearchText == null && CategoryUrl == null)
 {

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Net.Http;
-using System.Collections.Generic;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -54,7 +52,6 @@ namespace BlazingShop.Client.Services.AuthenticationService
                         new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
                     await _localStorage.SetItemAsync("auth_token", result.Access_Token);
-
                     ((AuthStateProvider)_authStateProvider).NotifyUserAuthentication(result.Access_Token);
 
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", result.Access_Token);
