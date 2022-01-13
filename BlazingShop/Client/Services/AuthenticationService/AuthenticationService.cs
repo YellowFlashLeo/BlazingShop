@@ -50,7 +50,7 @@ namespace BlazingShop.Client.Services.AuthenticationService
             {
                 if (authResult.IsSuccessStatusCode == false)
                 {
-                    throw new Exception(authResult.ReasonPhrase);
+                    return null;
                 }
                 else
                 {

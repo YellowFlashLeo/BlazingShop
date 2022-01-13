@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using BlazingShop.Client.Authentication.Models;
-using BlazingShop.Server.DataBase;
-using BlazingShop.Shared.Modals;
-using Microsoft.AspNetCore.Identity;
+using BlazingShop.Server.DataBase.Operations.TokenService;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace BlazingShop.Server.Controllers
 {
@@ -18,76 +9,25 @@ namespace BlazingShop.Server.Controllers
     [ApiController]
     public class TokenController : ControllerBase
     {
-        private readonly DataContext _context;
-        private readonly UserManager<User> _userManager;
+        private readonly ITokenService _tokenService;
 
-        public TokenController(DataContext context, UserManager<User> userManager)
+        public TokenController(ITokenService tokenService)
         {
-            _context = context;
-            _userManager = userManager;
+            _tokenService = tokenService;
         }
 
         [Route("/token")]
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] AuthenticationUserModel model)
         {
-            if (await IsValidUsernameAndPassword(model.Email, model.Password))
+            if (await _tokenService.IsValidUsernameAndPassword(model.Email, model.Password))
             {
-                return Ok(await GenerateToken(model.Email));
+                return Ok(await _tokenService.GenerateToken(model.Email));
             }
             else
             {
                 return BadRequest();
             }
-        }
-
-        private async Task<bool> IsValidUsernameAndPassword(string username, string password)
-        {
-            var user = await _userManager.FindByEmailAsync(username);
-            return user.Password == password ? true : false;
-        }
-
-        private async Task<dynamic> GenerateToken(string username)
-        {
-            var user = await _userManager.FindByEmailAsync(username);
-            var roles = from ur in _context.UserRoles
-                        join r in _context.Roles on ur.RoleId equals r.Id
-                        where ur.UserId == user.Id
-                        select new { ur.UserId, ur.RoleId, r.Name };
-
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(JwtRegisteredClaimNames.Nbf,
-                    new DateTimeOffset(DateTime.Now)
-                    .ToUnixTimeSeconds()
-                    .ToString()),
-                new Claim(JwtRegisteredClaimNames.Exp,
-                    new DateTimeOffset(DateTime.Now.AddHours(2))
-                        .ToUnixTimeSeconds()
-                        .ToString())
-            };
-
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role.Name));
-            }
-
-            var token = new JwtSecurityToken(
-                new JwtHeader(
-                    new SigningCredentials(
-                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes("MySecretKeyIsSecret")),
-                        SecurityAlgorithms.HmacSha256)),
-                new JwtPayload(claims));
-
-            var output = new
-            {
-                Access_Token = new JwtSecurityTokenHandler().WriteToken(token),
-                UserName = username
-            };
-
-            return output;
         }
     }
 }

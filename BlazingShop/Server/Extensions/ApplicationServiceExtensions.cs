@@ -3,6 +3,7 @@ using BlazingShop.Server.DataBase.Operations.PaymentService;
 using BlazingShop.Server.DataBase.Operations.CategoryServiceDB;
 using BlazingShop.Server.DataBase.Operations.ProductServiceDB;
 using BlazingShop.Server.DataBase.Operations.StatsServiceDB;
+using BlazingShop.Server.DataBase.Operations.TokenService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,7 @@ namespace BlazingShop.Server.Extensions
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IStatsService, StatsService>();
             services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<ITokenService, TokenService>();
             return services;
         }
     }

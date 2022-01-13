@@ -6,15 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using BlazingShop.Server.DataBase;
-using BlazingShop.Server.DataBase.Operations.CategoryServiceDB;
-using BlazingShop.Server.DataBase.Operations.PaymentService;
-using BlazingShop.Server.DataBase.Operations.ProductServiceDB;
-using BlazingShop.Server.DataBase.Operations.StatsServiceDB;
 using BlazingShop.Server.Extensions;
 using BlazingShop.Shared.Modals;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 
