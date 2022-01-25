@@ -9,6 +9,7 @@ using BlazingShop.Client.Authentication;
 using BlazingShop.Client.Authentication.Models;
 using BlazingShop.Shared.Modals;
 using Blazored.LocalStorage;
+using Blazored.Toast.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -18,14 +19,18 @@ namespace BlazingShop.Client.Services.AuthenticationService
     public class AuthenticationService : IAuthenticationService
     {
         private readonly AuthenticationStateProvider _authStateProvider;
+        private readonly IToastService _toastService;
         private readonly ILocalStorageService _localStorage;
         private readonly HttpClient _httpClient;
-        public AuthenticationService(HttpClient httpClient, AuthenticationStateProvider authStateProvider,
-            ILocalStorageService localStorage)
+        public AuthenticationService(HttpClient httpClient, 
+            AuthenticationStateProvider authStateProvider,
+            ILocalStorageService localStorage,
+            IToastService toastService)
         {
             _authStateProvider = authStateProvider;
             _localStorage = localStorage;
             _httpClient = httpClient;
+            _toastService = toastService;
         }
 
         public async Task RegisterUser(CreateUserModel model)
@@ -36,6 +41,7 @@ namespace BlazingShop.Client.Services.AuthenticationService
             {
                 if (response.IsSuccessStatusCode == false)
                 {
+                    _toastService.ShowError($"Registration failed",$"{response.ReasonPhrase}");
                     throw new Exception(response.ReasonPhrase);
                 }
             }
@@ -50,6 +56,7 @@ namespace BlazingShop.Client.Services.AuthenticationService
             {
                 if (authResult.IsSuccessStatusCode == false)
                 {
+                    _toastService.ShowError($"Unable to login",$"{authResult.ReasonPhrase}");
                     return null;
                 }
                 else

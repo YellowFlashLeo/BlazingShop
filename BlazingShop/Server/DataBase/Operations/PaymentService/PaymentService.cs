@@ -31,7 +31,7 @@ namespace BlazingShop.Server.DataBase.Operations.PaymentService
             }));
             var options = new SessionCreateOptions
             {
-                PaymentMethodTypes = new List<string> {"card",},
+                PaymentMethodTypes = new List<string> {"card"},
                 LineItems = lineItems,
                 Mode = "payment",
                 SuccessUrl = "https://localhost:44376/order-success",
